@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AdminLayout from '../../../layout';
-import { vendors } from '@/data/mock';
 import { Vendor } from '@/types';
 
 export default function AdminEditVendorPage() {
@@ -26,17 +25,11 @@ export default function AdminEditVendorPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const vendor = vendors.find(v => v.id === vendorId);
-    if (vendor) {
-      setFormData({
-        name: vendor.name,
-        description: vendor.description,
-        logo: vendor.logo,
-        contactInfo: vendor.contactInfo,
-        website: vendor.website || '',
-      });
-    }
-    setIsLoading(false);
+    // In a real app, this would fetch the vendor from an API
+    // For now, we'll simulate loading
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, [vendorId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -63,19 +56,8 @@ export default function AdminEditVendorPage() {
     setIsSubmitting(true);
 
     try {
-      const vendorIndex = vendors.findIndex(v => v.id === vendorId);
-      if (vendorIndex !== -1) {
-        // Update the vendor
-        vendors[vendorIndex] = {
-          ...vendors[vendorIndex],
-          name: formData.name,
-          description: formData.description,
-          logo: formData.logo,
-          contactInfo: formData.contactInfo,
-          website: formData.website,
-        };
-      }
-
+      // In a real app, this would make an API call to update the vendor
+      // For now, we'll just redirect to vendors page
       router.push('/admin/vendors');
     } catch (error) {
       console.error('Error updating vendor:', error);

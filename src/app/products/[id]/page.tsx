@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { getProductById, getVendorById } from '@/data';
+import { getProductById, getVendorById, getReviewsByProductId, addReview, updateReviewHelpful } from '@/data';
 import { useCart } from '@/context/CartContext';
+import { ProductReviews } from '@/components/ProductReviews';
+import { Review } from '@/types/reviews';
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
@@ -171,6 +173,28 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-16">
+          <ProductReviews
+            productId={product.id}
+            reviews={getReviewsByProductId(product.id)}
+            onAddReview={(review: Omit<Review, 'id' | 'createdAt'>) => {
+              const newReview: Review = {
+                ...review,
+                id: Date.now().toString(),
+                createdAt: new Date().toISOString(),
+              };
+              addReview(newReview);
+            }}
+            onHelpfulClick={(reviewId: string) => {
+              const review = getReviewsByProductId(product.id).find(r => r.id === reviewId);
+              if (review) {
+                updateReviewHelpful(reviewId, review.helpful + 1);
+              }
+            }}
+          />
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { vendors } from '@/data/mock';
 import { Vendor } from '@/types';
 
 export default function AdminNewVendorPage() {
@@ -44,22 +43,8 @@ export default function AdminNewVendorPage() {
     setIsSubmitting(true);
 
     try {
-      // In a real app, this would make an API call
-      const newVendor: Vendor = {
-        id: `vendor-${Date.now()}`,
-        name: formData.name,
-        description: formData.description,
-        logo: formData.logo || 'https://via.placeholder.com/100x100?text=Logo',
-        contactInfo: formData.contactInfo,
-        products: [],
-        rating: 0,
-        reviews: 0,
-        joinedDate: new Date().toISOString(),
-      };
-
-      // Add to mock data (in real app, this would be an API call)
-      vendors.push(newVendor);
-
+      // In a real app, this would make an API call to create the vendor
+      // For now, we'll just redirect to vendors page
       router.push('/admin/vendors');
     } catch (error) {
       console.error('Error creating vendor:', error);

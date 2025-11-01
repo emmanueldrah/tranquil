@@ -1,5 +1,7 @@
 import { Product, Vendor, Category, CartItem, Order, User } from '@/types';
 
+import { Review } from '@/types/reviews';
+
 // Initialize local storage with empty data
 const initializeLocalStorage = () => {
   if (typeof window === 'undefined') return;
@@ -18,6 +20,12 @@ const initializeLocalStorage = () => {
   }
   if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify([]));
+  }
+  if (!localStorage.getItem('reviews')) {
+    localStorage.setItem('reviews', JSON.stringify([]));
+  }
+  if (!localStorage.getItem('wishlist')) {
+    localStorage.setItem('wishlist', JSON.stringify([]));
   }
 };
 
@@ -173,6 +181,63 @@ export const removeFromCart = (productId: string) => {
 
 export const clearCart = () => {
   localStorage.setItem('cart', JSON.stringify([]));
+};
+
+// Reviews
+export const getAllReviews = (): Review[] => {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem('reviews');
+  return stored ? JSON.parse(stored) : [];
+};
+
+export const getReviewsByProductId = (productId: string): Review[] => {
+  const reviews = getAllReviews();
+  return reviews.filter(review => review.productId === productId);
+};
+
+export const addReview = (review: Review) => {
+  const reviews = getAllReviews();
+  reviews.push(review);
+  localStorage.setItem('reviews', JSON.stringify(reviews));
+};
+
+export const updateReviewHelpful = (reviewId: string, helpful: number) => {
+  const reviews = getAllReviews();
+  const review = reviews.find(r => r.id === reviewId);
+  if (review) {
+    review.helpful = helpful;
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+  }
+};
+
+// Wishlist
+export const getWishlist = (): string[] => {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem('wishlist');
+  return stored ? JSON.parse(stored) : [];
+};
+
+export const addToWishlist = (productId: string) => {
+  const wishlist = getWishlist();
+  if (!wishlist.includes(productId)) {
+    wishlist.push(productId);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }
+};
+
+export const removeFromWishlist = (productId: string) => {
+  const wishlist = getWishlist();
+  const updatedWishlist = wishlist.filter(id => id !== productId);
+  localStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
+};
+
+export const isInWishlist = (productId: string): boolean => {
+  const wishlist = getWishlist();
+  return wishlist.includes(productId);
+};
+
+export const clearWishlist = () => {
+  localStorage.setItem('wishlist', JSON.stringify([]));
 };
 
 // Initialize local storage when importing this module

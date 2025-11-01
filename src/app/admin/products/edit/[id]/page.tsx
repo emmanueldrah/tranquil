@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import AdminLayout from '../../../../layout';
-import { products } from '@/data/mock';
 import { Product } from '@/types';
 import { Category } from '@/types/category';
 import { getAllCategories } from '@/lib/categories';
@@ -30,20 +29,11 @@ export default function AdminEditProductPage() {
 
   useEffect(() => {
     const loadData = async () => {
-      const product = products.find(p => p.id === productId);
-      if (product) {
-        setFormData({
-          name: product.name,
-          description: product.description,
-          price: product.price.toString(),
-          category: product.category,
-          subcategory: product.subcategory || '',
-          vendor: product.vendor,
-          stock: product.stock.toString(),
-          images: product.images.length > 0 ? product.images : [''],
-        });
-      }
-      setIsLoading(false);
+      // In a real app, this would fetch the product from an API
+      // For now, we'll simulate loading
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
 
       try {
         const allCategories = await getAllCategories();
@@ -97,22 +87,8 @@ export default function AdminEditProductPage() {
     setIsSubmitting(true);
 
     try {
-      const productIndex = products.findIndex(p => p.id === productId);
-      if (productIndex !== -1) {
-        // Update the product
-        products[productIndex] = {
-          ...products[productIndex],
-          name: formData.name,
-          description: formData.description,
-          price: parseFloat(formData.price),
-          images: formData.images.filter(img => img.trim() !== ''),
-          category: formData.category,
-          subcategory: formData.subcategory,
-          vendor: formData.vendor,
-          stock: parseInt(formData.stock),
-        };
-      }
-
+      // In a real app, this would make an API call to update the product
+      // For now, we'll just redirect to products page
       router.push('/admin/products');
     } catch (error) {
       console.error('Error updating product:', error);

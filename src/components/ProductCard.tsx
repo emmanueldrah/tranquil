@@ -1,6 +1,11 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
+import { Heart } from 'lucide-react';
 import { Product } from '@/types';
+import { useCart } from '@/context/CartContext';
 
 interface ProductCardProps {
   product: Product;
@@ -19,32 +24,57 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     stock,
   } = product;
 
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useCart();
+  const [isWishlisted, setIsWishlisted] = useState(isInWishlist(id));
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation to product page
+    if (isWishlisted) {
+      removeFromWishlist(id);
+      setIsWishlisted(false);
+    } else {
+      addToWishlist(id);
+      setIsWishlisted(true);
+    }
+  };
+
   return (
     <Link href={`/products/${id}`}>
-      <div className="group relative bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <div className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300 transform hover:-translate-y-1">
         {/* Product Image */}
-        <div className="aspect-square relative overflow-hidden bg-gray-100">
+        <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-50 to-teal-50">
           <Image
             src={images[0] || '/images/placeholder.jpg'}
             alt={name}
             fill
-            className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+            className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
           />
           {isOnSale && (
-            <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium">
+            <div className="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg">
               Sale
             </div>
           )}
+          {/* Wishlist Button */}
+          <button
+            onClick={handleWishlistToggle}
+            className="absolute top-3 left-3 p-2.5 rounded-full bg-white/90 hover:bg-white transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-110"
+          >
+            <Heart
+              className={`w-4 h-4 transition-colors duration-200 ${
+                isWishlisted ? 'fill-emerald-500 text-emerald-500' : 'text-gray-400 hover:text-emerald-500'
+              }`}
+            />
+          </button>
         </div>
 
         {/* Product Info */}
-        <div className="p-4">
-          <h3 className="text-sm font-medium text-gray-900 mb-1">{name}</h3>
-          <div className="flex items-center justify-between mb-2">
+        <div className="p-5">
+          <h3 className="text-sm font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-teal-700 transition-colors">{name}</h3>
+          <div className="flex items-center justify-between mb-3">
             <div>
               {isOnSale ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-red-600">
+                  <span className="text-xl font-bold text-emerald-600">
                     ₵{salePrice?.toFixed(2)}
                   </span>
                   <span className="text-sm text-gray-500 line-through">
@@ -52,13 +82,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                   </span>
                 </div>
               ) : (
-                <span className="text-lg font-bold text-gray-900">
+                <span className="text-xl font-bold text-gray-900">
                   ₵{price.toFixed(2)}
                 </span>
               )}
             </div>
             {stock < 5 && stock > 0 && (
-              <span className="text-sm text-orange-500">
+              <span className="text-sm text-orange-500 font-medium bg-orange-50 px-2 py-1 rounded-full">
                 Only {stock} left!
               </span>
             )}

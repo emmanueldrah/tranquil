@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../layout';
-import { Product, Category } from '@/types';
+import { Product } from '@/types';
+import { Category } from '@/types/category';
 import { getAllCategories } from '@/lib/categories';
 
 export default function AdminNewProductPage() {
