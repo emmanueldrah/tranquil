@@ -84,7 +84,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <svg
                     key={index}
                     className={`w-5 h-5 ${
-                      index < Math.floor(product.rating)
+                      index < Math.floor(product.rating.average)
                         ? 'text-yellow-400'
                         : 'text-gray-300'
                     }`}

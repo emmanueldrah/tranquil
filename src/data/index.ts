@@ -1,4 +1,4 @@
-import { products, vendors, categories } from './mock';
+import { products, vendors, categories, mockUsers } from './mock';
 import { Product, Vendor, Category, CartItem, Order, User } from '@/types';
 
 // Initialize local storage with mock data
@@ -16,6 +16,9 @@ const initializeLocalStorage = () => {
   }
   if (!localStorage.getItem('orders')) {
     localStorage.setItem('orders', JSON.stringify([]));
+  }
+  if (!localStorage.getItem('users')) {
+    localStorage.setItem('users', JSON.stringify(mockUsers));
   }
 };
 

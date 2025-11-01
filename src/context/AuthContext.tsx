@@ -12,7 +12,7 @@ import { User } from '@/types';
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: Partial<User>) => Promise<void>;
+  register: (name: string, email: string, password: string, role?: 'user' | 'admin') => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -37,10 +37,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const foundUser = users.find(
-      (u: User) => u.email === email
-      // In a real app, we would hash the password and compare hashes
+
+    // Check for admin user first
+    let foundUser = users.find(
+      (u: User) => u.email === email && u.role === 'admin'
     );
+
+    // If not admin, check regular users
+    if (!foundUser) {
+      foundUser = users.find(
+        (u: User) => u.email === email
+        // In a real app, we would hash the password and compare hashes
+      );
+    }
 
     if (!foundUser) {
       throw new Error('Invalid credentials');
@@ -50,22 +59,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('currentUser', JSON.stringify(foundUser));
   };
 
-  const register = async (userData: Partial<User>) => {
+  const register = async (name: string, email: string, password: string, role: 'user' | 'admin' = 'user') => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
+
     // Check if email already exists
-    if (users.some((u: User) => u.email === userData.email)) {
+    if (users.some((u: User) => u.email === email)) {
       throw new Error('Email already exists');
     }
 
     const newUser: User = {
       id: `user_${Date.now()}`,
-      name: userData.name || '',
-      email: userData.email || '',
-      phone: userData.phone || '',
+      name,
+      email,
+      role,
+      phone: '',
       addresses: [],
       wishlist: [],
       cart: [],

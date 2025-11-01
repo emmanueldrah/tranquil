@@ -87,7 +87,7 @@ export default function CheckoutPage() {
               Order Confirmed!
             </h1>
             <p className="text-gray-600 mb-8">
-              Thank you for your order. We'll send you a confirmation email shortly.
+              Thank you for your order. We&apos;ll send you a confirmation email shortly.
             </p>
             <Link
               href="/"

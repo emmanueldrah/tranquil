@@ -6,14 +6,18 @@ export interface Product {
   images: string[];
   category: string;
   subcategory?: string;
-  vendor: string;
   stock: number;
-  rating: number;
+  vendor: string;
+  rating: {
+    average: number;
+    count: number;
+  };
   reviews: number;
   specifications?: Record<string, string>;
   isOnSale?: boolean;
   salePrice?: number;
   saleEnds?: string;
+  createdAt?: string;
 }
 
 export interface Vendor {
@@ -30,6 +34,7 @@ export interface Vendor {
     email: string;
     address: string;
   };
+  website?: string;
 }
 
 export interface User {
@@ -37,6 +42,7 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  role?: 'user' | 'admin';
   addresses: Address[];
   wishlist: string[]; // Product IDs
   cart: CartItem[];

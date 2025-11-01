@@ -5,15 +5,20 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingBag, User, Search, Menu, X } from 'lucide-react';
+import { ShoppingBag, User, Search, Menu, X, Sun, Moon, Bell } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { cartItems } = useCart();
+  const { items: cartItems } = useCart();
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,7 +47,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-blue-600">Tranquil</span>
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">T</span>
+              </div>
             </Link>
 
             {/* Desktop Navigation */}
@@ -80,14 +87,28 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Desktop Icons */}
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-4">
+              {/* Dark mode toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200"
+              >
+                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+
+              {/* Notifications */}
+              <button className="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200 relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
+              </button>
+
               <Link
                 href="/cart"
-                className="relative text-gray-600 hover:text-blue-600"
+                className="relative p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200"
               >
                 <ShoppingBag className="h-6 w-6" />
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center shadow-lg">
                     {cartItems.length}
                   </span>
                 )}
@@ -95,42 +116,54 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
               {user ? (
                 <div className="relative group">
-                  <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-600">
-                    <User className="h-6 w-6" />
+                  <button className="flex items-center space-x-2 p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
                   </button>
-                  <div className="absolute right-0 w-48 mt-2 py-2 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <div className="absolute right-0 w-56 mt-2 py-2 bg-white rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-200">
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <p className="text-sm font-semibold text-gray-900">Welcome back!</p>
+                      <p className="text-xs text-gray-500">{(user as any)?.email || 'user@example.com'}</p>
+                    </div>
                     <Link
                       href="/account"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
+                      <User className="h-4 w-4 mr-3" />
                       My Account
                     </Link>
                     <Link
                       href="/account/orders"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
+                      <ShoppingBag className="h-4 w-4 mr-3" />
                       Orders
                     </Link>
-                    {user.role === 'admin' && (
+                    {(user as any)?.role === 'admin' && (
                       <Link
                         href="/admin"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                       >
+                        <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded mr-3"></div>
                         Admin Dashboard
                       </Link>
                     )}
-                    <button
-                      onClick={logout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
+                    <div className="border-t border-gray-200 mt-2">
+                      <button
+                        onClick={logout}
+                        className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        <X className="h-4 w-4 mr-3" />
+                        Logout
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
                 <Link
                   href="/login"
-                  className="text-gray-600 hover:text-blue-600"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Login
                 </Link>
@@ -197,7 +230,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   >
                     Orders
                   </Link>
-                  {user.role === 'admin' && (
+                    {(user as any)?.role === 'admin' && (
                     <Link
                       href="/admin"
                       className="block px-3 py-2 text-gray-600 hover:text-blue-600"
@@ -234,51 +267,73 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       <main className="pt-16 min-h-screen">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <footer className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white border-t border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Company Info */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Tranquil</h3>
-              <p className="text-gray-400 text-sm">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">T</span>
+                </div>
+                <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  Tranquil
+                </h3>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
                 Your one-stop shop for all your needs. Quality products,
                 competitive prices, and excellent customer service.
               </p>
+              <div className="flex space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center hover:from-blue-600 hover:to-blue-700 transition-all duration-200 cursor-pointer">
+                  <span className="text-white text-sm">f</span>
+                </div>
+                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center hover:from-pink-600 hover:to-pink-700 transition-all duration-200 cursor-pointer">
+                  <span className="text-white text-sm">i</span>
+                </div>
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg flex items-center justify-center hover:from-blue-500 hover:to-blue-600 transition-all duration-200 cursor-pointer">
+                  <span className="text-white text-sm">t</span>
+                </div>
+              </div>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
+              <h3 className="text-lg font-semibold mb-6 text-white">Quick Links</h3>
+              <ul className="space-y-3">
                 <li>
                   <Link
                     href="/about"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     About Us
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/contact"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     Contact Us
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/blog"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     Blog
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/careers"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     Careers
                   </Link>
                 </li>
@@ -287,37 +342,41 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
             {/* Customer Service */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
-              <ul className="space-y-2">
+              <h3 className="text-lg font-semibold mb-6 text-white">Customer Service</h3>
+              <ul className="space-y-3">
                 <li>
                   <Link
                     href="/faq"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     FAQ
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/shipping"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     Shipping Information
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/returns"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     Returns Policy
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="/privacy"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-300 hover:text-white transition-colors duration-200 flex items-center group"
                   >
+                    <span className="w-1 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full mr-3 group-hover:w-2 transition-all duration-200"></span>
                     Privacy Policy
                   </Link>
                 </li>
@@ -326,28 +385,37 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
             {/* Newsletter */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-              <p className="text-gray-400 text-sm mb-4">
+              <h3 className="text-lg font-semibold mb-6 text-white">Stay Connected</h3>
+              <p className="text-gray-300 text-sm mb-6 leading-relaxed">
                 Subscribe to our newsletter for updates and exclusive offers.
               </p>
-              <form className="flex">
+              <form className="space-y-3">
                 <input
                   type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-2 rounded-l-md text-gray-900 focus:outline-none"
+                  placeholder="Your email address"
+                  className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition-colors"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
-                  Subscribe
+                  Subscribe Now
                 </button>
               </form>
             </div>
           </div>
 
-          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-            <p>&copy; {new Date().getFullYear()} Tranquil. All rights reserved.</p>
+          <div className="mt-12 pt-8 border-t border-gray-700">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <p className="text-gray-400 text-sm">
+                © {new Date().getFullYear()} Tranquil Enterprise. All rights reserved.
+              </p>
+              <div className="flex items-center space-x-6 text-sm text-gray-400">
+                <span>Version 2.0.0</span>
+                <span>•</span>
+                <span>Made with ❤️</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

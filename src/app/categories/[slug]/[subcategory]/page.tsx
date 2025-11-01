@@ -3,12 +3,13 @@ import { getCategoryBySlug } from '@/data';
 import { ProductCard } from '@/components/ProductCard';
 import { getAllProducts } from '@/data';
 
-export default function SubcategoryPage({
+export default async function SubcategoryPage({
   params,
 }: {
-  params: { slug: string; subcategory: string };
+  params: Promise<{ slug: string; subcategory: string }>;
 }) {
-  const category = getCategoryBySlug(params.slug);
+  const { slug, subcategory: subcategorySlug } = await params;
+  const category = getCategoryBySlug(slug);
   if (!category) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -18,7 +19,7 @@ export default function SubcategoryPage({
   }
 
   const subcategory = category.subcategories.find(
-    (sub) => sub.slug === params.subcategory
+    (sub) => sub.slug === subcategorySlug
   );
   if (!subcategory) {
     return (

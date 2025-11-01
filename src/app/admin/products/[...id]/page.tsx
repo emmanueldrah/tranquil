@@ -29,7 +29,7 @@ export default function ProductForm({
     images: [],
     vendor: '',
     stock: 0,
-    rating: 0,
+    rating: { average: 0, count: 0 },
     reviews: 0,
   });
 
@@ -68,7 +68,7 @@ export default function ProductForm({
         const newProduct: Product = {
           ...formData as Product,
           id: uuidv4(),
-          rating: 0,
+          rating: { average: 0, count: 0 },
           reviews: 0,
         };
         addProduct(newProduct);

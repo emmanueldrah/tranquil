@@ -71,7 +71,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <svg
                   key={index}
                   className={`w-4 h-4 ${
-                    index < Math.floor(rating)
+                    index < Math.floor(rating.average)
                       ? 'text-yellow-400'
                       : 'text-gray-300'
                   }`}
