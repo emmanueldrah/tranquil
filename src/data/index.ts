@@ -1,32 +1,31 @@
-import { products, vendors, categories, mockUsers } from './mock';
 import { Product, Vendor, Category, CartItem, Order, User } from '@/types';
 
-// Initialize local storage with mock data
+// Initialize local storage with empty data
 const initializeLocalStorage = () => {
   if (typeof window === 'undefined') return;
-  
+
   if (!localStorage.getItem('products')) {
-    localStorage.setItem('products', JSON.stringify(products));
+    localStorage.setItem('products', JSON.stringify([]));
   }
   if (!localStorage.getItem('vendors')) {
-    localStorage.setItem('vendors', JSON.stringify(vendors));
+    localStorage.setItem('vendors', JSON.stringify([]));
   }
   if (!localStorage.getItem('categories')) {
-    localStorage.setItem('categories', JSON.stringify(categories));
+    localStorage.setItem('categories', JSON.stringify([]));
   }
   if (!localStorage.getItem('orders')) {
     localStorage.setItem('orders', JSON.stringify([]));
   }
   if (!localStorage.getItem('users')) {
-    localStorage.setItem('users', JSON.stringify(mockUsers));
+    localStorage.setItem('users', JSON.stringify([]));
   }
 };
 
 // Products
 export const getAllProducts = (): Product[] => {
-  if (typeof window === 'undefined') return products;
+  if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem('products');
-  return stored ? JSON.parse(stored) : products;
+  return stored ? JSON.parse(stored) : [];
 };
 
 export const getProductById = (id: string): Product | undefined => {
@@ -62,9 +61,9 @@ export const deleteProduct = (id: string) => {
 
 // Vendors
 export const getAllVendors = (): Vendor[] => {
-  if (typeof window === 'undefined') return vendors;
+  if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem('vendors');
-  return stored ? JSON.parse(stored) : vendors;
+  return stored ? JSON.parse(stored) : [];
 };
 
 export const getVendorById = (id: string): Vendor | undefined => {
@@ -122,9 +121,9 @@ export const updateOrderStatus = (orderId: string, status: Order['status']) => {
 
 // Categories
 export const getAllCategories = (): Category[] => {
-  if (typeof window === 'undefined') return categories;
+  if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem('categories');
-  return stored ? JSON.parse(stored) : categories;
+  return stored ? JSON.parse(stored) : [];
 };
 
 export const getCategoryBySlug = (slug: string): Category | undefined => {
