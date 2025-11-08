@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { Truck, MapPin, Clock, DollarSign, Plus, Edit, Trash2, Settings, Package, Globe } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 interface ShippingMethod {
   id: string;
@@ -117,7 +119,7 @@ export default function ShippingPage() {
       case 'express':
         return 'text-orange-600 bg-orange-50 dark:bg-orange-900/20';
       case 'overnight':
-        return 'text-purple-600 bg-purple-50 dark:bg-purple-900/20';
+        return 'text-blue-700 bg-blue-50 dark:bg-blue-900/20';
       default:
         return 'text-gray-600 bg-gray-50 dark:bg-gray-900/20';
     }
@@ -131,18 +133,20 @@ export default function ShippingPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shipping Management</h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Configure shipping methods, rates, and tracking information.
-          </p>
+      <Card style={{ background: 'var(--admin-bg-card)', borderColor: 'var(--admin-border)' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Shipping Management</h2>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Configure shipping methods, rates, and tracking information.
+            </p>
+          </div>
+          <Button variant="primary" className="flex items-center px-4 py-2 rounded-lg hover:opacity-95 transition-colors" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Method
+          </Button>
         </div>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Method
-        </button>
-      </div>
+      </Card>
 
       {/* Tabs */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
@@ -151,9 +155,10 @@ export default function ShippingPage() {
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
-                <button
+                <Button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  variant="ghost"
                   className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -162,7 +167,7 @@ export default function ShippingPage() {
                 >
                   <Icon className="h-4 w-4" />
                   <span>{tab.label}</span>
-                </button>
+                </Button>
               );
             })}
           </nav>
@@ -204,13 +209,13 @@ export default function ShippingPage() {
                     </div>
 
                     <div className="flex space-x-2">
-                      <button className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                      <Button className="flex-1 flex items-center justify-center px-3 py-2 text-sm rounded-lg hover:opacity-95 transition-colors" variant="primary" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
                         <Edit className="h-4 w-4 mr-1" />
                         Edit
-                      </button>
-                      <button className="flex items-center justify-center px-3 py-2 bg-gray-600 text-white text-sm rounded-lg hover:bg-gray-700 transition-colors">
+                      </Button>
+                      <Button className="flex items-center justify-center px-3 py-2 text-sm rounded-lg" variant="ghost" style={{ background: 'var(--admin-bg-hover)', color: 'var(--admin-text-white)' }}>
                         <Settings className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -223,10 +228,10 @@ export default function ShippingPage() {
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
                   Create a new shipping method with custom rates and zones
                 </p>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Button variant="primary" className="px-4 py-2 rounded-lg hover:opacity-95 transition-colors" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
                   <Plus className="h-4 w-4 mr-2 inline" />
                   Add Method
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -243,9 +248,9 @@ export default function ShippingPage() {
                           {zone.countries.length} countries, {zone.states.length} states
                         </p>
                       </div>
-                      <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                      <Button variant="ghost" className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                         <Edit className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
 
                     <div className="space-y-2">
@@ -271,10 +276,10 @@ export default function ShippingPage() {
                 <p className="text-gray-500 dark:text-gray-400 mb-4">
                   Define geographic areas for shipping calculations
                 </p>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Button variant="primary" className="px-4 py-2 rounded-lg hover:opacity-95 transition-colors" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
                   <Plus className="h-4 w-4 mr-2 inline" />
                   Add Zone
-                </button>
+                </Button>
               </div>
             </div>
           )}

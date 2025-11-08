@@ -24,74 +24,80 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Check if user is logged in on mount
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Login failed');
+      }
 
-    // Check for admin user first
-    let foundUser = users.find(
-      (u: User) => u.email === email && u.role === 'admin'
-    );
-
-    // If not admin, check regular users
-    if (!foundUser) {
-      foundUser = users.find(
-        (u: User) => u.email === email
-        // In a real app, we would hash the password and compare hashes
-      );
+      const data = await response.json();
+      setUser(data.user);
+    } finally {
+      setIsLoading(false);
     }
-
-    if (!foundUser) {
-      throw new Error('Invalid credentials');
-    }
-
-    setUser(foundUser);
-    localStorage.setItem('currentUser', JSON.stringify(foundUser));
   };
 
   const register = async (name: string, email: string, password: string, role: 'user' | 'admin' = 'user') => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password, role }),
+      });
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Registration failed');
+      }
 
-    // Check if email already exists
-    if (users.some((u: User) => u.email === email)) {
-      throw new Error('Email already exists');
+      const data = await response.json();
+      setUser(data.user);
+    } finally {
+      setIsLoading(false);
     }
-
-    const newUser: User = {
-      id: `user_${Date.now()}`,
-      name,
-      email,
-      role,
-      phone: '',
-      addresses: [],
-      wishlist: [],
-      cart: [],
-      orders: [],
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    setUser(newUser);
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('currentUser');
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+    }
   };
 
   return (

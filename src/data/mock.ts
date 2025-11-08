@@ -1,4 +1,4 @@
-import { Product, Vendor } from '@/types';
+import { Product, Vendor, Order, TrackingEvent } from '@/types';
 
 export const products: Product[] = [
   {
@@ -7,10 +7,10 @@ export const products: Product[] = [
     description: 'Powerful 400W electric chopper for quick and efficient food preparation. Perfect for chopping vegetables, nuts, and making sauces.',
     price: 89.99,
     images: ['/images/Decakila 2L Chopper.jpg'],
-    category: 'Kitchen Appliances',
-    subcategory: 'Food Processors',
+    category: 'Home Appliances',
+    subcategory: 'Kitchen Appliances',
     stock: 15,
-    vendor: 'Decakila',
+    vendor: 'vendor-1',
     rating: { average: 4.5, count: 23 },
     reviews: 23,
     specifications: {
@@ -29,9 +29,9 @@ export const products: Product[] = [
     price: 199.99,
     images: ['/images/jbl.jpg'],
     category: 'Electronics',
-    subcategory: 'Audio Systems',
+    subcategory: 'Audio',
     stock: 8,
-    vendor: 'JBL Ghana',
+    vendor: 'vendor-2',
     rating: { average: 4.2, count: 45 },
     reviews: 45,
     specifications: {
@@ -51,10 +51,10 @@ export const products: Product[] = [
     description: 'Lightweight and powerful cordless hand mixer with multiple speed settings. Battery operated for convenience.',
     price: 45.99,
     images: ['/images/Cordless hand mixer.jpg'],
-    category: 'Kitchen Appliances',
-    subcategory: 'Mixers',
+    category: 'Home Appliances',
+    subcategory: 'Kitchen Appliances',
     stock: 22,
-    vendor: 'Decakila',
+    vendor: 'vendor-1',
     rating: { average: 4.0, count: 18 },
     reviews: 18,
     specifications: {
@@ -73,9 +73,9 @@ export const products: Product[] = [
     price: 129.99,
     images: ['/images/smart watch.jpg'],
     category: 'Electronics',
-    subcategory: 'Wearables',
+    subcategory: 'Accessories',
     stock: 12,
-    vendor: 'Generic',
+    vendor: 'vendor-3',
     rating: { average: 4.3, count: 67 },
     reviews: 67,
     specifications: {
@@ -95,10 +95,10 @@ export const products: Product[] = [
     description: '8-cup capacity rice cooker with keep-warm function. Perfect for cooking rice, quinoa, and other grains.',
     price: 34.99,
     images: ['/images/rice cooker.jpg'],
-    category: 'Kitchen Appliances',
-    subcategory: 'Cookers',
+    category: 'Home Appliances',
+    subcategory: 'Kitchen Appliances',
     stock: 18,
-    vendor: 'Generic',
+    vendor: 'vendor-3',
     rating: { average: 4.1, count: 32 },
     reviews: 32,
     specifications: {
@@ -116,10 +116,10 @@ export const products: Product[] = [
     description: 'Non-stick waffle maker with adjustable temperature control. Makes perfect waffles every time.',
     price: 39.99,
     images: ['/images/waffle.jpg'],
-    category: 'Kitchen Appliances',
-    subcategory: 'Cookers',
+    category: 'Home Appliances',
+    subcategory: 'Kitchen Appliances',
     stock: 14,
-    vendor: 'Generic',
+    vendor: 'vendor-3',
     rating: { average: 4.4, count: 28 },
     reviews: 28,
     specifications: {
@@ -130,6 +130,166 @@ export const products: Product[] = [
     },
     isOnSale: false,
     createdAt: '2024-01-01T13:00:00Z'
+  }
+];
+
+// Mock tracking events for demonstration
+export const mockTrackingEvents: TrackingEvent[] = [
+  {
+    id: '1',
+    status: 'Order Placed',
+    description: 'Your order has been successfully placed and is being processed.',
+    location: 'Accra, Ghana',
+    timestamp: '2024-11-15T10:30:00Z',
+    carrier: 'Internal Processing'
+  },
+  {
+    id: '2',
+    status: 'Order Confirmed',
+    description: 'Your order has been confirmed and payment has been received.',
+    location: 'Accra, Ghana',
+    timestamp: '2024-11-15T11:00:00Z',
+    carrier: 'Internal Processing'
+  },
+  {
+    id: '3',
+    status: 'Processing',
+    description: 'Your order is being prepared for shipment.',
+    location: 'Accra Warehouse',
+    timestamp: '2024-11-15T14:30:00Z',
+    carrier: 'Internal Processing'
+  },
+  {
+    id: '4',
+    status: 'Shipped',
+    description: 'Your order has been shipped and is on its way.',
+    location: 'Accra Distribution Center',
+    timestamp: '2024-11-16T09:15:00Z',
+    carrier: 'DHL Ghana'
+  },
+  {
+    id: '5',
+    status: 'In Transit',
+    description: 'Package is in transit to the delivery location.',
+    location: 'Tema Transit Hub',
+    timestamp: '2024-11-16T16:45:00Z',
+    carrier: 'DHL Ghana'
+  },
+  {
+    id: '6',
+    status: 'Out for Delivery',
+    description: 'Your package is out for delivery and will arrive today.',
+    location: 'Kumasi Delivery Center',
+    timestamp: '2024-11-17T08:30:00Z',
+    carrier: 'DHL Ghana'
+  },
+  {
+    id: '7',
+    status: 'Delivered',
+    description: 'Your order has been successfully delivered.',
+    location: 'Customer Address',
+    timestamp: '2024-11-17T14:20:00Z',
+    carrier: 'DHL Ghana'
+  }
+];
+
+// Mock orders with tracking data
+export const mockOrders: Order[] = [
+  {
+    id: '#ORD-2024-001',
+    userId: 'user-1',
+    items: [
+      {
+        productId: '1',
+        quantity: 1,
+        price: 89.99
+      },
+      {
+        productId: '3',
+        quantity: 2,
+        price: 45.99
+      }
+    ],
+    totalAmount: 181.97,
+    status: 'delivered',
+    paymentMethod: 'Mobile Money',
+    shippingAddress: {
+      id: 'addr-1',
+      type: 'home',
+      street: '123 Main Street',
+      city: 'Accra',
+      region: 'Greater Accra',
+      postalCode: '00233',
+      isDefault: true
+    },
+    createdAt: '2024-11-15T10:30:00Z',
+    updatedAt: '2024-11-17T14:20:00Z',
+    trackingNumber: 'DHL-GH-123456789',
+    estimatedDelivery: '2024-11-17T18:00:00Z',
+    trackingHistory: mockTrackingEvents,
+    carrier: 'DHL Ghana'
+  },
+  {
+    id: '#ORD-2024-002',
+    userId: 'user-1',
+    items: [
+      {
+        productId: '2',
+        quantity: 1,
+        price: 149.99
+      }
+    ],
+    totalAmount: 149.99,
+    status: 'shipped',
+    paymentMethod: 'Card',
+    shippingAddress: {
+      id: 'addr-1',
+      type: 'home',
+      street: '123 Main Street',
+      city: 'Accra',
+      region: 'Greater Accra',
+      postalCode: '00233',
+      isDefault: true
+    },
+    createdAt: '2024-11-16T09:00:00Z',
+    updatedAt: '2024-11-16T16:45:00Z',
+    trackingNumber: 'DHL-GH-987654321',
+    estimatedDelivery: '2024-11-18T18:00:00Z',
+    trackingHistory: mockTrackingEvents.slice(0, 5),
+    carrier: 'DHL Ghana'
+  },
+  {
+    id: '#ORD-2024-003',
+    userId: 'user-1',
+    items: [
+      {
+        productId: '4',
+        quantity: 1,
+        price: 99.99
+      },
+      {
+        productId: '5',
+        quantity: 1,
+        price: 34.99
+      }
+    ],
+    totalAmount: 134.98,
+    status: 'processing',
+    paymentMethod: 'Mobile Money',
+    shippingAddress: {
+      id: 'addr-1',
+      type: 'home',
+      street: '123 Main Street',
+      city: 'Accra',
+      region: 'Greater Accra',
+      postalCode: '00233',
+      isDefault: true
+    },
+    createdAt: '2024-11-17T14:00:00Z',
+    updatedAt: '2024-11-17T14:30:00Z',
+    estimatedDelivery: '2024-11-20T18:00:00Z',
+    trackingHistory: mockTrackingEvents.slice(0, 3),
+    carrier: 'Internal Processing'
   }
 ];
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   TrendingUp,
   TrendingDown,
@@ -10,10 +10,11 @@ import {
   Package,
   BarChart3,
   PieChart,
-  Calendar,
   Download,
   RefreshCw
 } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 interface SalesData {
   totalRevenue: number;
@@ -106,42 +107,40 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Sales Analytics</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Comprehensive insights into your store's performance and trends.
-          </p>
+      <Card className="card-admin p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Sales Analytics</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Comprehensive insights into your store&apos;s performance and trends.
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d' | '1y')}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+              <option value="1y">Last year</option>
+            </select>
+            <Button onClick={handleRefresh} disabled={isLoading} variant="ghost" className="flex items-center px-4 py-2 rounded-lg hover:opacity-95 transition-colors disabled:opacity-50" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button variant="ghost" className="flex items-center px-4 py-2 rounded-lg hover:opacity-95 transition-colors" style={{ background: 'var(--admin-bg-hover)', color: 'var(--admin-text-white)' }}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center space-x-3">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d' | '1y')}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
-          </select>
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
-          <button className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </button>
-        </div>
-      </div>
+      </Card>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-success)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100">Total Revenue</p>
@@ -155,7 +154,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-primary)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100">Total Orders</p>
@@ -169,21 +168,21 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-primary)' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100">Total Customers</p>
+              <p className="text-white/80">Total Customers</p>
               <p className="text-2xl font-bold">{analyticsData.totalCustomers.toLocaleString()}</p>
-              <p className="text-sm text-purple-200 flex items-center mt-1">
+              <p className="text-sm text-white/70 flex items-center mt-1">
                 <TrendingUp className="h-3 w-3 mr-1" />
                 +15.3% from last month
               </p>
             </div>
-            <Users className="h-8 w-8 text-purple-200" />
+            <Users className="h-8 w-8 text-white/70" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-warning)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-orange-100">Avg Order Value</p>
@@ -206,7 +205,7 @@ export default function AnalyticsPage() {
             <BarChart3 className="h-5 w-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {analyticsData.monthlyRevenue.map((month, index) => (
+            {analyticsData.monthlyRevenue.map((month) => (
               <div key={month.month} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3">
@@ -235,11 +234,11 @@ export default function AnalyticsPage() {
             <PieChart className="h-5 w-5 text-gray-400" />
           </div>
           <div className="space-y-4">
-            {analyticsData.salesByCategory.map((category, index) => (
+            {analyticsData.salesByCategory.map((category) => (
               <div key={category.category} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className={`w-3 h-3 rounded-full mr-3 ${
-                    ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500'][index % 4]
+                    ['bg-blue-500', 'bg-green-500', 'bg-blue-700', 'bg-orange-500'][analyticsData.salesByCategory.indexOf(category) % 4]
                   }`}></div>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">{category.category}</span>
                 </div>

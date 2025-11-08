@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
 
 export default function Register() {
   const router = useRouter();
@@ -30,11 +31,11 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-      });
+      await register(
+        formData.name,
+        formData.email,
+        formData.password
+      );
       router.push('/account');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
@@ -182,13 +183,14 @@ export default function Register() {
             </div>
 
             <div>
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                variant="primary"
+                className="w-full flex justify-center py-2 px-4 shadow-sm text-sm font-medium"
               >
                 {isLoading ? 'Creating Account...' : 'Create Account'}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

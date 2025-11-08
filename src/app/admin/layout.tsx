@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { AdminLayout } from '@/components/admin/AdminLayout';
+import NewAdminLayout from '@/components/admin/NewAdminLayout';
 
 export default function AdminLayoutWrapper({
   children,
@@ -14,16 +14,17 @@ export default function AdminLayoutWrapper({
   const router = useRouter();
   const pathname = usePathname();
 
+  useEffect(() => {
+    if (!isLoading && (!user || user.role !== 'admin') && 
+        pathname !== '/admin/login' && pathname !== '/admin/register') {
+      router.push('/admin/login');
+    }
+  }, [user, isLoading, router, pathname]);
+
   // Don't apply admin layout to login and register pages
   if (pathname === '/admin/login' || pathname === '/admin/register') {
     return <>{children}</>;
   }
-
-  useEffect(() => {
-    if (!isLoading && (!user || user.role !== 'admin')) {
-      router.push('/admin/login');
-    }
-  }, [user, isLoading, router]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -39,5 +40,5 @@ export default function AdminLayoutWrapper({
     return null;
   }
 
-  return <AdminLayout>{children}</AdminLayout>;
+  return <NewAdminLayout>{children}</NewAdminLayout>;
 }

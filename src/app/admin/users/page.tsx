@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { User, Mail, Phone, Calendar, Ban, CheckCircle, Plus, Edit, Trash2, Search, Filter, X } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 interface UserData {
   id: string;
@@ -16,7 +18,6 @@ interface UserData {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<UserData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState<'all' | 'customer' | 'admin' | 'moderator' | 'vendor'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive' | 'banned'>('all');
@@ -38,54 +39,33 @@ export default function AdminUsersPage() {
     status: 'active' as 'active' | 'inactive' | 'banned'
   });
 
+  // Start empty; fetch users from API
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+
   useEffect(() => {
-    // Mock data - in a real app, this would fetch from an API
-    const mockUsers: UserData[] = [
-      {
-        id: '1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+1234567890',
-        role: 'customer',
-        status: 'active',
-        joinDate: '2024-01-15',
-        lastLogin: '2024-11-15',
-        ordersCount: 5,
-      },
-      {
-        id: '2',
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        phone: '+1234567891',
-        role: 'admin',
-        status: 'active',
-        joinDate: '2023-12-01',
-        lastLogin: '2024-11-14',
-        ordersCount: 0,
-      },
-      {
-        id: '3',
-        name: 'Bob Johnson',
-        email: 'bob@example.com',
-        role: 'customer',
-        status: 'inactive',
-        joinDate: '2024-03-20',
-        lastLogin: '2024-10-01',
-        ordersCount: 2,
-      },
-      {
-        id: '4',
-        name: 'Alice Brown',
-        email: 'alice@example.com',
-        phone: '+1234567892',
-        role: 'customer',
-        status: 'banned',
-        joinDate: '2024-05-10',
-        lastLogin: '2024-09-15',
-        ordersCount: 1,
-      },
-    ];
-    setUsers(mockUsers);
+    let mounted = true;
+    setIsFetching(true);
+    fetch('/api/users')
+      .then((r) => r.json())
+      .then((data) => {
+        if (!mounted) return;
+        const mapped: UserData[] = (data || []).map((u: any) => ({
+          id: u.id,
+          name: u.name || u.email,
+          email: u.email,
+          phone: u.phone || undefined,
+          role: (u.role || 'customer') as UserData['role'],
+          status: 'active',
+          joinDate: u.createdAt ? new Date(u.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          lastLogin: undefined,
+          ordersCount: 0
+        }));
+        setUsers(mapped);
+      })
+      .catch((err) => console.error('Failed to load users:', err))
+      .finally(() => setIsFetching(false));
+    return () => { mounted = false; };
   }, []);
 
   const filteredUsers = users.filter(user => {
@@ -125,7 +105,7 @@ export default function AdminUsersPage() {
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'admin':
-        return 'text-purple-600 bg-purple-50';
+        return 'text-blue-700 bg-blue-50';
       case 'moderator':
         return 'text-orange-600 bg-orange-50';
       case 'vendor':
@@ -199,16 +179,15 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
+  <Card className="card-admin p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Users Management</h1>
-          <button
-            onClick={() => setShowAddUserModal(true)}
-            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
+          <Button onClick={() => setShowAddUserModal(true)} variant="primary" className="flex items-center px-4 py-2 rounded-md hover:opacity-95 transition-colors" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
             <Plus className="h-4 w-4 mr-2" />
             Add New User
-          </button>
+          </Button>
         </div>
+      </Card>
 
         {/* Filters */}
         <div className="bg-white p-4 rounded-lg shadow-sm">
@@ -334,29 +313,18 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="text-blue-600 hover:text-blue-900 flex items-center"
-                        >
+                        <Button onClick={() => handleEditUser(user)} variant="ghost" className="text-blue-600 hover:text-blue-900 flex items-center">
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
-                        </button>
-                        <button
-                          onClick={() => handleToggleBanUser(user.id)}
-                          className={`hover:text-red-900 flex items-center ${
-                            user.status === 'banned' ? 'text-green-600' : 'text-red-600'
-                          }`}
-                        >
+                        </Button>
+                        <Button onClick={() => handleToggleBanUser(user.id)} variant="ghost" className={`hover:text-red-900 flex items-center ${user.status === 'banned' ? 'text-green-600' : 'text-red-600'}`}>
                           <Ban className="h-4 w-4 mr-1" />
                           {user.status === 'banned' ? 'Unban' : 'Ban'}
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900 flex items-center"
-                        >
+                        </Button>
+                        <Button onClick={() => handleDeleteUser(user.id)} variant="ghost" className="text-red-600 hover:text-red-900 flex items-center">
                           <Trash2 className="h-4 w-4 mr-1" />
                           Delete
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -461,18 +429,12 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="flex space-x-3 mt-6">
-                <button
-                  onClick={() => setShowAddUserModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
+                <Button onClick={() => setShowAddUserModal(false)} variant="secondary" className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   Cancel
-                </button>
-                <button
-                  onClick={handleAddUser}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
+                </Button>
+                <Button onClick={handleAddUser} variant="primary" className="flex-1 px-4 py-2" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
                   Add User
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -565,18 +527,12 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="flex space-x-3 mt-6">
-                <button
-                  onClick={() => setShowEditUserModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
+                <Button onClick={() => setShowEditUserModal(false)} variant="secondary" className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   Cancel
-                </button>
-                <button
-                  onClick={handleUpdateUser}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
+                </Button>
+                <Button onClick={handleUpdateUser} variant="primary" className="flex-1 px-4 py-2" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
                   Update User
-                </button>
+                </Button>
               </div>
             </div>
           </div>

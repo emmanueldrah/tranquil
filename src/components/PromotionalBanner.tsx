@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
 
 interface Promotion {
   id: string;
@@ -37,16 +38,11 @@ const MOCK_PROMOTIONS: Promotion[] = [
 
 export function PromotionalBanner() {
   const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
-  const [activePromotions, setActivePromotions] = useState<Promotion[]>([]);
-
-  useEffect(() => {
-    // Filter active promotions based on current date
+  const activePromotions = useMemo<Promotion[]>(() => {
     const now = new Date();
-    const active = MOCK_PROMOTIONS.filter(
-      (promo) =>
-        new Date(promo.startDate) <= now && new Date(promo.endDate) >= now
+    return MOCK_PROMOTIONS.filter(
+      (promo) => new Date(promo.startDate) <= now && new Date(promo.endDate) >= now
     );
-    setActivePromotions(active);
   }, []);
 
   useEffect(() => {
@@ -64,7 +60,7 @@ export function PromotionalBanner() {
   const currentPromo = activePromotions[currentPromoIndex];
 
   return (
-    <div className="relative bg-blue-600">
+    <div className="relative bg-background">
       <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
         <div className="pr-16 sm:text-center sm:px-16">
           <div className="flex items-center justify-center">
@@ -82,15 +78,17 @@ export function PromotionalBanner() {
         {activePromotions.length > 1 && (
           <div className="absolute bottom-1 left-0 right-0 flex justify-center space-x-2">
             {activePromotions.map((_, index) => (
-              <button
+              <Button
                 key={index}
-                className={`h-1 w-4 rounded ${
-                  index === currentPromoIndex
-                    ? 'bg-white'
-                    : 'bg-white/50'
-                }`}
                 onClick={() => setCurrentPromoIndex(index)}
-              />
+                variant="ghost"
+                className={`h-1 w-4 rounded p-0 ${
+                  index === currentPromoIndex ? 'bg-green' : 'bg-surface opacity-60'
+                }`}
+                aria-label={`Go to promotion ${index + 1}`}
+              >
+                <span className="sr-only">Promotion {index + 1}</span>
+              </Button>
             ))}
           </div>
         )}

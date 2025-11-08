@@ -8,96 +8,146 @@ import {
   ReactNode,
 } from 'react';
 import { CartItem } from '@/types';
-import {
-  getCart,
-  addToCart as addToLocalStorage,
-  updateCartItemQuantity as updateLocalStorageQuantity,
-  removeFromCart as removeFromLocalStorage,
-  clearCart as clearLocalStorage,
-  getWishlist,
-  addToWishlist as addToWishlistStorage,
-  removeFromWishlist as removeFromWishlistStorage,
-  isInWishlist as isInWishlistStorage,
-  clearWishlist as clearWishlistStorage,
-} from '@/data';
+import { useAuth } from '@/context/AuthContext';
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (productId: string, quantity?: number) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeItem: (productId: string) => void;
+  addToCart: (productId: string, quantity?: number, selectedVariant?: string) => void;
+  updateQuantity: (productId: string, quantity: number, selectedVariant?: string) => void;
+  removeItem: (productId: string, selectedVariant?: string) => void;
   clearCart: () => void;
   wishlist: string[];
   addToWishlist: (productId: string) => void;
   removeFromWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
   clearWishlist: () => void;
+  isLoading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize cart and wishlist from localStorage
+  const fetchCartAndWishlist = async () => {
+    if (!user) {
+      setItems([]);
+      setWishlist([]);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const [cartRes, wishlistRes] = await Promise.all([
+        fetch('/api/cart'),
+        fetch('/api/wishlist'),
+      ]);
+      
+      if (!cartRes.ok || !wishlistRes.ok) {
+        throw new Error('Failed to fetch cart or wishlist');
+      }
+
+      const cartData = await cartRes.json();
+      const wishlistData = await wishlistRes.json();
+
+      setItems(cartData.cart || []);
+      setWishlist(wishlistData.wishlist || []);
+    } catch (error) {
+      console.error("Error fetching cart or wishlist:", error);
+      setItems([]);
+      setWishlist([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setItems(getCart());
-    setWishlist(getWishlist());
-  }, []);
+    fetchCartAndWishlist();
+  }, [user]);
 
-  const addToCart = (productId: string, quantity: number = 1) => {
-    addToLocalStorage(productId, quantity);
-    setItems(getCart());
+  const handleAddToCart = async (productId: string, quantity: number = 1, selectedVariant?: string) => {
+    if (!user) return;
+    await fetch('/api/cart', {
+      method: 'POST',
+      body: JSON.stringify({ productId, quantity, selectedVariant }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    fetchCartAndWishlist();
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    updateLocalStorageQuantity(productId, quantity);
-    setItems(getCart());
+  const handleUpdateQuantity = async (productId: string, quantity: number, selectedVariant?: string) => {
+    if (!user) return;
+    await fetch('/api/cart', {
+      method: 'PUT',
+      body: JSON.stringify({ productId, quantity, selectedVariant }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    fetchCartAndWishlist();
   };
 
-  const removeItem = (productId: string) => {
-    removeFromLocalStorage(productId);
-    setItems(getCart());
+  const handleRemoveItem = async (productId: string, selectedVariant?: string) => {
+    if (!user) return;
+    await fetch('/api/cart', {
+      method: 'DELETE',
+      body: JSON.stringify({ productId, selectedVariant }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    fetchCartAndWishlist();
   };
 
-  const clearCart = () => {
-    clearLocalStorage();
-    setItems([]);
+  const handleClearCart = async () => {
+    if (!user) return;
+    await fetch('/api/cart/clear', { method: 'POST' });
+    fetchCartAndWishlist();
   };
 
-  const addToWishlist = (productId: string) => {
-    addToWishlistStorage(productId);
-    setWishlist(getWishlist());
+  const handleAddToWishlist = async (productId: string) => {
+    if (!user) return;
+    await fetch('/api/wishlist', {
+      method: 'POST',
+      body: JSON.stringify({ productId }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    fetchCartAndWishlist();
   };
 
-  const removeFromWishlist = (productId: string) => {
-    removeFromWishlistStorage(productId);
-    setWishlist(getWishlist());
+  const handleRemoveFromWishlist = async (productId: string) => {
+    if (!user) return;
+    await fetch('/api/wishlist', {
+      method: 'DELETE',
+      body: JSON.stringify({ productId }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    fetchCartAndWishlist();
   };
 
-  const isInWishlist = (productId: string): boolean => {
-    return isInWishlistStorage(productId);
+  const handleIsInWishlist = (productId: string): boolean => {
+    return wishlist.includes(productId);
   };
 
-  const clearWishlist = () => {
-    clearWishlistStorage();
-    setWishlist([]);
+  const handleClearWishlist = async () => {
+    if (!user) return;
+    await fetch('/api/wishlist/clear', { method: 'POST' });
+    fetchCartAndWishlist();
   };
 
   return (
     <CartContext.Provider
       value={{
         items,
-        addToCart,
-        updateQuantity,
-        removeItem,
-        clearCart,
+        addToCart: handleAddToCart,
+        updateQuantity: handleUpdateQuantity,
+        removeItem: handleRemoveItem,
+        clearCart: handleClearCart,
         wishlist,
-        addToWishlist,
-        removeFromWishlist,
-        isInWishlist,
-        clearWishlist,
+        addToWishlist: handleAddToWishlist,
+        removeFromWishlist: handleRemoveFromWishlist,
+        isInWishlist: handleIsInWishlist,
+        clearWishlist: handleClearWishlist,
+        isLoading,
       }}
     >
       {children}

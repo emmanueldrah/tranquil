@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { getCategoryBySlug } from '@/data';
+import { getCategoryBySlug } from '@/lib/categories';
 import { ProductCard } from '@/components/ProductCard';
 import { getAllProducts } from '@/data';
 
@@ -9,11 +9,11 @@ export default async function SubcategoryPage({
   params: Promise<{ slug: string; subcategory: string }>;
 }) {
   const { slug, subcategory: subcategorySlug } = await params;
-  const category = getCategoryBySlug(slug);
+  const category = await getCategoryBySlug(slug);
   if (!category) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl text-gray-600">Category not found</p>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <p className="text-xl text-slate-400">Category not found</p>
       </div>
     );
   }
@@ -23,13 +23,13 @@ export default async function SubcategoryPage({
   );
   if (!subcategory) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl text-gray-600">Subcategory not found</p>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <p className="text-xl text-slate-400">Subcategory not found</p>
       </div>
     );
   }
 
-  const allProducts = getAllProducts();
+  const allProducts = await getAllProducts();
   const products = allProducts.filter(
     (product) =>
       product.category === category.name &&
@@ -37,7 +37,7 @@ export default async function SubcategoryPage({
   );
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen bg-slate-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Subcategory Header */}
         <div className="relative h-64 rounded-xl overflow-hidden mb-8">
@@ -65,7 +65,7 @@ export default async function SubcategoryPage({
 
         {products.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-xl text-gray-600">No products found</p>
+            <p className="text-xl text-slate-400">No products found</p>
           </div>
         )}
       </div>

@@ -1,34 +1,46 @@
-'use client';
+ 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useAuth } from '@/context/AuthContext';
-import { products } from '@/data/mock';
+import { Order } from '@/types';
 import Link from 'next/link';
 import { Eye, Package, Truck, CheckCircle, XCircle } from 'lucide-react';
-
-interface Order {
-  id: string;
-  date: string;
-  status: string;
-  items: typeof products;
-  total: number;
-}
 
 export default function AccountOrdersPage() {
   const { user } = useAuth();
 
-  // In a real app, this would fetch orders for the current user
-  // For now, create mock orders from products
-  const mockOrders: Order[] = products.slice(0, 3).map((product, index) => ({
-    id: `ORD-${1000 + index}`,
-    date: new Date(Date.now() - index * 86400000).toISOString(),
-    status: ['Processing', 'Shipped', 'Delivered'][index % 3],
-    items: [product],
-    total: product.price
-  }));
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  const [orders] = useState<Order[]>(mockOrders);
+  useEffect(() => {
+    if (!user) return;
+    let mounted = true;
+    fetch('/api/orders')
+      .then((r) => r.json())
+      .then((data) => {
+        if (!mounted) return;
+        const myOrders: Order[] = (data || [])
+          .filter((o: unknown) => o && typeof o === 'object' && 'userId' in o && o.userId === user.id)
+          .map((o: unknown) => {
+            const obj = o as Record<string, unknown>;
+            return {
+              id: obj.id as string,
+              userId: obj.userId as string,
+              items: (obj.items as unknown[]) || [],
+              totalAmount: (obj.totalAmount as number) || 0,
+              status: (obj.status as Order['status']) || 'pending',
+              paymentMethod: (obj.paymentMethod as string) || '',
+              shippingAddress: (obj.shippingAddress as unknown) || { id: '', type: 'home', street: '', city: '', region: '', postalCode: '', isDefault: false },
+              createdAt: (obj.createdAt as string) || new Date().toISOString(),
+              updatedAt: (obj.updatedAt as string) || new Date().toISOString(),
+              trackingNumber: (obj.trackingNumber as string) || undefined
+            };
+          });
+        setOrders(myOrders);
+      })
+      .catch((err) => console.error('Failed to load orders for account:', err));
+    return () => { mounted = false; };
+  }, [user]);
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
@@ -111,7 +123,7 @@ export default function AccountOrdersPage() {
                         Order #{order.id}
                       </h3>
                       <p className="text-gray-600">
-                        Placed on {new Date(order.date).toLocaleDateString()}
+                        Placed on {new Date(order.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -124,10 +136,10 @@ export default function AccountOrdersPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="text-sm text-gray-600">
-                        {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}
+                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                       </div>
                       <div className="text-lg font-semibold text-gray-900">
-                        ${order.total?.toFixed(2) || '0.00'}
+                        ${order.totalAmount.toFixed(2)}
                       </div>
                     </div>
                     <Link

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getVendorById, addVendor, updateVendor } from '@/data';
+import Button from '@/components/ui/Button';
 import { Vendor } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -29,16 +30,23 @@ export default function VendorForm({
     },
   });
 
-  const [error, setError] = useState('');
-
   useEffect(() => {
+    let mounted = true;
     if (isEditing && params.id?.[0]) {
-      const vendor = getVendorById(params.id[0]);
-      if (vendor) {
-        setFormData(vendor);
-      }
+      (async () => {
+        try {
+          const vendor = await getVendorById(params.id![0]);
+          if (mounted && vendor) setFormData(vendor);
+        } catch (err) {
+          console.error('Failed to load vendor:', err);
+        }
+      })();
     }
+    return () => {
+      mounted = false;
+    };
   }, [isEditing, params.id]);
+  const [error, setError] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -65,7 +73,7 @@ export default function VendorForm({
     e.preventDefault();
     try {
       if (isEditing && params.id?.[0]) {
-        updateVendor(formData as Vendor);
+        updateVendor(params.id[0], formData as Vendor);
       } else {
         const newVendor: Vendor = {
           ...formData as Vendor,
@@ -179,19 +187,17 @@ export default function VendorForm({
         </div>
 
         <div className="flex justify-end space-x-4">
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={() => router.back()}
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+            className="px-4 py-2"
           >
             Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
+          </Button>
+          <Button type="submit" variant="primary" className="px-4 py-2">
             {isEditing ? 'Update Vendor' : 'Add Vendor'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

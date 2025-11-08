@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { CreditCard, DollarSign, TrendingUp, TrendingDown, Search, Filter, Eye, RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
+import { paymentService } from '@/utils/paymentService';
 
 interface Payment {
   id: string;
@@ -18,17 +21,30 @@ interface Payment {
 }
 
 export default function PaymentsPage() {
-  const [payments, setPayments] = useState<Payment[]>([]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'pending' | 'failed' | 'refunded'>('all');
   const [filterMethod, setFilterMethod] = useState<'all' | 'card' | 'paypal' | 'bank_transfer' | 'cash'>('all');
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  useEffect(() => {
-    // In a real app, this would fetch from an API
-    setPayments([]);
-  }, []);
+  const [payments, setPayments] = useState<Payment[]>(() => {
+    const storedPayments = paymentService.getStoredPayments();
+    const formattedPayments: Payment[] = storedPayments.map(p => ({
+      id: p.id,
+      orderId: p.orderId,
+      customerName: p.customerName,
+      customerEmail: p.customerEmail,
+      amount: p.amount,
+      currency: p.currency,
+      method: p.method as 'card' | 'paypal' | 'bank_transfer' | 'cash',
+      status: p.status as 'completed' | 'pending' | 'failed' | 'refunded',
+      transactionId: p.transactionId || 'N/A',
+      createdAt: p.createdAt,
+      processedAt: p.processedAt
+    }));
+    return formattedPayments;
+  });
 
   const filteredPayments = payments.filter(payment => {
     const matchesSearch = payment.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,21 +115,23 @@ export default function PaymentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payment Processing</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage payment methods, transactions, and processing settings.
-          </p>
+      <Card style={{ background: 'var(--admin-bg-card)', borderColor: 'var(--admin-border)' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payment Processing</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Manage payment methods, transactions, and processing settings.
+            </p>
+          </div>
+          <Button variant="primary" className="px-4 py-2 rounded-lg hover:opacity-95 transition-colors" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
+            Process Payment
+          </Button>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          Process Payment
-        </button>
-      </div>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-success)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-100">Total Revenue</p>
@@ -122,7 +140,7 @@ export default function PaymentsPage() {
             <TrendingUp className="h-8 w-8 text-green-200" />
           </div>
         </div>
-        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-warning)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-yellow-100">Pending Payments</p>
@@ -131,7 +149,7 @@ export default function PaymentsPage() {
             <Clock className="h-8 w-8 text-yellow-200" />
           </div>
         </div>
-        <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+        <div className="rounded-lg p-6 text-white" style={{ background: 'var(--admin-gradient-danger)' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-red-100">Failed Payments</p>
@@ -261,12 +279,9 @@ export default function PaymentsPage() {
                     {new Date(payment.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => handleViewPayment(payment)}
-                      className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
+                      <Button onClick={() => handleViewPayment(payment)} variant="ghost" className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                        <Eye className="h-4 w-4" />
+                      </Button>
                   </td>
                 </tr>
               ))}
@@ -354,18 +369,18 @@ export default function PaymentsPage() {
 
                 <div className="flex space-x-3 pt-4">
                   {selectedPayment.status === 'pending' && (
-                    <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    <Button className="px-4 py-2" variant="primary" style={{ background: 'var(--admin-gradient-success)', color: 'var(--admin-text-white)' }}>
                       Process Payment
-                    </button>
+                    </Button>
                   )}
                   {selectedPayment.status === 'completed' && (
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <Button className="px-4 py-2" variant="secondary" style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}>
                       Refund Payment
-                    </button>
+                    </Button>
                   )}
-                  <button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                  <Button className="px-4 py-2" variant="ghost" style={{ background: 'var(--admin-bg-hover)', color: 'var(--admin-text-white)' }}>
                     Download Receipt
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

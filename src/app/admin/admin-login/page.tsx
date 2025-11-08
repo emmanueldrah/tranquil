@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -57,10 +58,10 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ background: 'linear-gradient(135deg, var(--admin-brand-teal) 0%, var(--admin-deep-blue) 100%)' }}>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl" style={{ background: 'var(--admin-gradient-primary)' }}>
             <Shield className="h-8 w-8 text-white" />
           </div>
         </div>
@@ -123,17 +124,18 @@ export default function AdminLogin() {
                   className="appearance-none block w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
                   placeholder="Enter your password"
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  variant="ghost"
+                  className="absolute inset-y-0 right-0 pr-3 p-0 flex items-center text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
                   ) : (
                     <Eye className="h-5 w-5" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -164,10 +166,12 @@ export default function AdminLogin() {
             </div>
 
             <div>
-              <button
+              <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+                variant="primary"
+                className="w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+                style={{ background: 'var(--admin-gradient-primary)', color: 'var(--admin-text-white)' }}
               >
                 {isLoading ? (
                   <div className="flex items-center">
@@ -177,7 +181,7 @@ export default function AdminLogin() {
                 ) : (
                   'Sign in to Admin Panel'
                 )}
-              </button>
+              </Button>
             </div>
           </form>
 

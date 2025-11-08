@@ -1,69 +1,64 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { User, Mail, Phone, MapPin, Calendar, Shield, Edit, Save, X, Camera } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 export default function AdminProfilePage() {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('adminProfileImage');
+    } catch {
+      return null;
+    }
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [profile, setProfile] = useState({
-    name: user?.name || 'Admin User',
-    email: user?.email || 'admin@example.com',
-    phone: user?.phone || '+1234567890',
-    role: user?.role === 'admin' ? 'Super Admin' : 'Admin',
-    joinDate: '2024-01-01',
-    lastLogin: '2024-11-15',
-    permissions: ['All Access', 'User Management', 'Product Management', 'Order Management'],
-    address: 'Accra, Ghana'
+
+  const [profile, setProfile] = useState(() => {
+    const base = {
+      name: user?.name || 'Admin User',
+      email: user?.email || 'admin@example.com',
+      phone: user?.phone || '+1234567890',
+      role: user?.role === 'admin' ? 'Super Admin' : 'Admin',
+      joinDate: '2024-01-01',
+      lastLogin: '2024-11-15',
+      permissions: ['All Access', 'User Management', 'Product Management', 'Order Management'],
+      address: 'Accra, Ghana'
+    } as any;
+
+    try {
+      const saved = localStorage.getItem('adminProfile');
+      if (saved) {
+        return { ...base, ...JSON.parse(saved) };
+      }
+    } catch (e) {
+      console.error('Error parsing saved profile:', e);
+    }
+
+    return base;
   });
 
-  const [editForm, setEditForm] = useState(profile);
+  const [editForm, setEditForm] = useState(() => {
+    try {
+      const saved = localStorage.getItem('adminProfile');
+      if (saved) return { ...JSON.parse(saved) };
+    } catch {}
 
-  // Load saved profile data from localStorage on mount
-  useEffect(() => {
-    const savedProfile = localStorage.getItem('adminProfile');
-    const savedImage = localStorage.getItem('adminProfileImage');
-
-    if (savedProfile) {
-      try {
-        const parsedProfile = JSON.parse(savedProfile);
-        setProfile(prev => ({ ...prev, ...parsedProfile }));
-        setEditForm(prev => ({ ...prev, ...parsedProfile }));
-      } catch (error) {
-        console.error('Error parsing saved profile:', error);
-      }
-    }
-
-    if (savedImage) {
-      setProfileImage(savedImage);
-    }
-  }, []);
-
-  // Update profile when user data changes (only if no saved data exists)
-  useEffect(() => {
-    if (user) {
-      const savedProfile = localStorage.getItem('adminProfile');
-      if (!savedProfile) {
-        setProfile(prev => ({
-          ...prev,
-          name: user.name,
-          email: user.email,
-          phone: user.phone || '+1234567890',
-          role: user.role === 'admin' ? 'Super Admin' : 'Admin'
-        }));
-        setEditForm(prev => ({
-          ...prev,
-          name: user.name,
-          email: user.email,
-          phone: user.phone || '+1234567890',
-          role: user.role === 'admin' ? 'Super Admin' : 'Admin'
-        }));
-      }
-    }
-  }, [user]);
+    return {
+      name: user?.name || 'Admin User',
+      email: user?.email || 'admin@example.com',
+      phone: user?.phone || '+1234567890',
+      role: user?.role === 'admin' ? 'Super Admin' : 'Admin',
+      joinDate: '2024-01-01',
+      lastLogin: '2024-11-15',
+      permissions: ['All Access', 'User Management', 'Product Management', 'Order Management'],
+      address: 'Accra, Ghana'
+    } as any;
+  });
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -83,7 +78,7 @@ export default function AdminProfilePage() {
     setIsEditing(false);
     // Save profile data to localStorage
     localStorage.setItem('adminProfile', JSON.stringify(editForm));
-    // In a real app, this would save to the backend
+
   };
 
   const handleCancel = () => {
@@ -93,23 +88,27 @@ export default function AdminProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Profile</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage your account settings and preferences.
-          </p>
+      <Card style={{ background: 'var(--admin-bg-card)', borderColor: 'var(--admin-border)' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Profile</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Manage your account settings and preferences.
+            </p>
+          </div>
+          {!isEditing && (
+            <Button
+              onClick={() => setIsEditing(true)}
+              variant="secondary"
+              className="flex items-center px-4 py-2 rounded-lg hover:opacity-95 transition-colors"
+              style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+          )}
         </div>
-        {!isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Profile
-          </button>
-        )}
-      </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}
@@ -123,18 +122,20 @@ export default function AdminProfilePage() {
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover"
                   />
-                ) : (
-                  <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  ) : (
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{ background: 'var(--admin-gradient-primary)' }}>
                     <User className="h-12 w-12 text-white" />
                   </div>
                 )}
                 {isEditing && (
-                  <button
+                  <Button
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full hover:bg-blue-700 transition-colors"
+                    variant="secondary"
+                    className="absolute bottom-0 right-0 p-1.5 rounded-full hover:opacity-95 transition-colors"
+                    style={{ background: 'var(--admin-deep-blue)', color: 'var(--admin-text-white)' }}
                   >
                     <Camera className="h-3 w-3" />
-                  </button>
+                  </Button>
                 )}
                 <input
                   ref={fileInputRef}
@@ -148,8 +149,8 @@ export default function AdminProfilePage() {
                 {profile.name}
               </h3>
               <div className="flex items-center justify-center mb-2">
-                <Shield className="h-4 w-4 text-purple-600 mr-1" />
-                <span className="text-sm text-purple-600 font-medium">{profile.role}</span>
+                <Shield className="h-4 w-4 text-[var(--admin-deep-blue)] mr-1" />
+                <span className="text-sm text-[var(--admin-deep-blue)] font-medium">{profile.role}</span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{profile.email}</p>
             </div>
@@ -238,7 +239,7 @@ export default function AdminProfilePage() {
                     Role
                   </label>
                   <div className="flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md">
-                    <Shield className="h-4 w-4 text-purple-600 mr-2" />
+                    <Shield className="h-4 w-4 mr-2" style={{ color: 'var(--admin-deep-blue)' }} />
                     <span className="text-gray-900 dark:text-white">{profile.role}</span>
                   </div>
                 </div>
@@ -250,7 +251,7 @@ export default function AdminProfilePage() {
                   Permissions
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {profile.permissions.map((permission, index) => (
+                  {profile.permissions.map((permission: string, index: number) => (
                     <span
                       key={index}
                       className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full"
@@ -264,20 +265,14 @@ export default function AdminProfilePage() {
               {/* Action Buttons */}
               {isEditing && (
                 <div className="flex space-x-3 pt-4">
-                  <button
-                    onClick={handleSave}
-                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                  >
+                  <Button onClick={handleSave} variant="primary" className="flex items-center" style={{ background: 'var(--admin-accent-green)', color: 'var(--admin-text-white)' }}>
                     <Save className="h-4 w-4 mr-2" />
                     Save Changes
-                  </button>
-                  <button
-                    onClick={handleCancel}
-                    className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                  >
+                  </Button>
+                  <Button onClick={handleCancel} variant="ghost" className="flex items-center" style={{ background: 'var(--admin-border)', color: 'var(--admin-text)' }}>
                     <X className="h-4 w-4 mr-2" />
                     Cancel
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -305,7 +300,7 @@ export default function AdminProfilePage() {
               </div>
               <div className="flex items-center justify-between py-2">
                 <div className="flex items-center">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                  <div className="w-2 h-2 bg-blue-700 rounded-full mr-3"></div>
                   <span className="text-sm text-gray-600 dark:text-gray-400">Created new user account</span>
                 </div>
                 <span className="text-xs text-gray-500">1 week ago</span>

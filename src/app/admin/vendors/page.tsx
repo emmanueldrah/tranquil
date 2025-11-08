@@ -4,25 +4,36 @@ import { useState, useEffect } from 'react';
 import { getAllVendors, deleteVendor } from '@/data';
 import { Vendor } from '@/types';
 import Link from 'next/link';
+import Card from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 
 export default function AdminVendors() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const loadVendors = async () => {
+    try {
+      const data = await getAllVendors();
+      setVendors(data);
+    } catch (error) {
+      console.error('Error loading vendors:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadVendors();
   }, []);
 
-  const loadVendors = () => {
-    const allVendors = getAllVendors();
-    setVendors(allVendors);
-    setIsLoading(false);
-  };
-
   const handleDelete = async (vendorId: string) => {
     if (window.confirm('Are you sure you want to delete this vendor?')) {
-      deleteVendor(vendorId);
-      loadVendors();
+      try {
+        await deleteVendor(vendorId);
+        await loadVendors();
+      } catch (error) {
+        console.error('Error deleting vendor:', error);
+      }
     }
   };
 
@@ -32,18 +43,18 @@ export default function AdminVendors() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Vendors</h1>
-        <Link
-          href="/admin/vendors/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-        >
-          Add Vendor
-        </Link>
-      </div>
+  <Card className="card-admin p-6 mb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold">Vendors</h1>
+          <Button href="/admin/vendors/new" variant="primary">
+            Add Vendor
+          </Button>
+        </div>
+      </Card>
 
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+  <Card className="card-admin p-6">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -110,18 +121,16 @@ export default function AdminVendors() {
                   >
                     Edit
                   </Link>
-                  <button
-                    onClick={() => handleDelete(vendor.id)}
-                    className="text-red-600 hover:text-red-900"
-                  >
+                  <Button onClick={() => handleDelete(vendor.id)} variant="ghost" className="text-red-600 hover:text-red-900">
                     Delete
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      </Card>
     </div>
   );
 }

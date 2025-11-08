@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { FileText, Image, Video, Music, Upload, Edit, Trash2, Eye, Plus, Search, Filter } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 interface ContentItem {
   id: string;
@@ -121,27 +123,30 @@ export default function ContentPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Content Management</h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage website content, pages, and media assets.
-          </p>
+  <Card className="card-admin p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Content Management</h2>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Manage website content, pages, and media assets.
+            </p>
+          </div>
+          <Button variant="primary" className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Content
+          </Button>
         </div>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Content
-        </button>
-      </div>
+      </Card>
 
       {/* Tabs */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex space-x-8 px-6">
             {tabs.map((tab) => (
-              <button
+              <Button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
+                variant="ghost"
                 className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -152,7 +157,7 @@ export default function ContentPage() {
                 <span className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs">
                   {tab.count}
                 </span>
-              </button>
+              </Button>
             ))}
           </nav>
         </div>
@@ -244,17 +249,17 @@ export default function ContentPage() {
                     {new Date(item.updatedAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
+                            <div className="flex space-x-2">
+                              <Button variant="ghost" className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                   </td>
                 </tr>
               ))}
@@ -278,9 +283,9 @@ export default function ContentPage() {
             <p className="text-gray-500 dark:text-gray-400 mb-4">
               Drag and drop files here, or click to browse
             </p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Button variant="primary" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               Choose Files
-            </button>
+            </Button>
           </div>
         </div>
       </div>

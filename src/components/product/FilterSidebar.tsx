@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 const categories = [
   'All Categories',
@@ -16,11 +17,11 @@ const categories = [
 ];
 
 const priceRanges = [
-  { label: 'Under $25', value: '0-25' },
-  { label: '$25 to $50', value: '25-50' },
-  { label: '$50 to $100', value: '50-100' },
-  { label: '$100 to $200', value: '100-200' },
-  { label: 'Over $200', value: '200-' },
+  { label: 'Under ₵25', value: '0-25' },
+  { label: '₵25 to ₵50', value: '25-50' },
+  { label: '₵50 to ₵100', value: '50-100' },
+  { label: '₵100 to ₵200', value: '100-200' },
+  { label: 'Over ₵200', value: '200-' },
 ];
 
 interface FilterSidebarProps {
@@ -79,9 +80,11 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
     <div className="bg-white p-4 rounded-lg shadow-md">
       {/* Categories */}
       <div className="mb-6">
-        <button
-          className="flex justify-between items-center w-full text-lg font-semibold mb-4"
+        <Button
+          type="button"
+          variant="ghost"
           onClick={() => toggleSection('categories')}
+          className="flex justify-between items-center w-full text-lg font-semibold mb-4"
         >
           Categories
           {expandedSections.categories ? (
@@ -89,7 +92,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
           ) : (
             <ChevronDown className="h-5 w-5" />
           )}
-        </button>
+        </Button>
         {expandedSections.categories && (
           <div className="space-y-2">
             {categories.map((category) => (
@@ -113,9 +116,11 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
       {/* Price Range */}
       <div className="mb-6">
-        <button
-          className="flex justify-between items-center w-full text-lg font-semibold mb-4"
+        <Button
+          type="button"
+          variant="ghost"
           onClick={() => toggleSection('price')}
+          className="flex justify-between items-center w-full text-lg font-semibold mb-4"
         >
           Price Range
           {expandedSections.price ? (
@@ -123,7 +128,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
           ) : (
             <ChevronDown className="h-5 w-5" />
           )}
-        </button>
+        </Button>
         {expandedSections.price && (
           <div className="space-y-2">
             {priceRanges.map((range) => (
@@ -146,9 +151,11 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
 
       {/* Availability */}
       <div>
-        <button
-          className="flex justify-between items-center w-full text-lg font-semibold mb-4"
+        <Button
+          type="button"
+          variant="ghost"
           onClick={() => toggleSection('availability')}
+          className="flex justify-between items-center w-full text-lg font-semibold mb-4"
         >
           Availability
           {expandedSections.availability ? (
@@ -156,7 +163,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
           ) : (
             <ChevronDown className="h-5 w-5" />
           )}
-        </button>
+        </Button>
         {expandedSections.availability && (
           <label className="flex items-center space-x-2 cursor-pointer">
             <input

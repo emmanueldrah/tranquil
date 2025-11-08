@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Ban, CheckCircle, Search, Filter, Edit, Eye, Trash2 } from 'lucide-react';
+import Card from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 
 interface Customer {
   id: string;
@@ -28,10 +30,7 @@ export default function CustomersPage() {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
-  useEffect(() => {
-    // In a real app, this would fetch from an API
-    setCustomers([]);
-  }, []);
+  // Customers initialized empty; in production this would be fetched from an API
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,13 +55,13 @@ export default function CustomersPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'text-green-600 bg-green-50';
+        return 'text-green-600 bg-green-100 dark:bg-green-900/20 dark:text-green-400';
       case 'inactive':
-        return 'text-yellow-600 bg-yellow-50';
+        return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400';
       case 'banned':
-        return 'text-red-600 bg-red-50';
+        return 'text-red-600 bg-red-100 dark:bg-red-900/20 dark:text-red-400';
       default:
-        return 'text-gray-600 bg-gray-50';
+        return 'text-gray-600 bg-gray-100 dark:bg-gray-700/20 dark:text-gray-400';
     }
   };
 
@@ -79,20 +78,22 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Customer Management</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage your customers and their information.
-          </p>
+      <Card className="bg-white dark:bg-gray-800 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Customer Management</h1>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+              Manage your customers and their information.
+            </p>
+          </div>
+          <Button variant="primary" className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white" onClick={() => {/* open add modal (kept behavior) */}}>
+            Add New Customer
+          </Button>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          Add New Customer
-        </button>
-      </div>
+      </Card>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+      <Card className="bg-white dark:bg-gray-800 p-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,7 +104,7 @@ export default function CustomersPage() {
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="block w-full pl-10 pr-3 py-2 rounded-md bg-gray-100 dark:bg-gray-700 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="relative">
@@ -113,7 +114,7 @@ export default function CustomersPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'inactive' | 'banned')}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="block w-full pl-10 pr-3 py-2 rounded-md bg-gray-100 dark:bg-gray-700 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -122,10 +123,10 @@ export default function CustomersPage() {
             </select>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Customers Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      <Card className="bg-white dark:bg-gray-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
@@ -197,15 +198,12 @@ export default function CustomersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleViewCustomer(customer)}
-                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
-                      >
+                      <Button onClick={() => handleViewCustomer(customer)} variant="ghost" className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                         <Eye className="h-4 w-4" />
-                      </button>
-                      <button className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                      </Button>
+                      <Button variant="ghost" className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
                         <Edit className="h-4 w-4" />
-                      </button>
+                      </Button>
                       <select
                         value={customer.status}
                         onChange={(e) => handleStatusChange(customer.id, e.target.value as 'active' | 'inactive' | 'banned')}
@@ -222,7 +220,7 @@ export default function CustomersPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       {filteredCustomers.length === 0 && (
         <div className="text-center py-12">
@@ -235,18 +233,15 @@ export default function CustomersPage() {
       {/* Customer Details Modal */}
       {showCustomerModal && selectedCustomer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <Card className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Customer Details</h3>
-                <button
-                  onClick={() => setShowCustomerModal(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
+                <Button onClick={() => setShowCustomerModal(false)} variant="ghost" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2">
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </button>
+                </Button>
               </div>
 
               <div className="space-y-6">
@@ -303,7 +298,7 @@ export default function CustomersPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

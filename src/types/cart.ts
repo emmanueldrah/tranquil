@@ -5,6 +5,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  selectedVariant?: string; // Variant ID
 }
 
 export interface CartContextType {

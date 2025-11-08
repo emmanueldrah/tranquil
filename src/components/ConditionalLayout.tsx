@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { Layout } from './Layout';
+import { MainLayout } from './layout/MainLayout';
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -11,5 +12,6 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  return <Layout>{children}</Layout>;
+  // Use the new MainLayout for the non-admin site shell; fall back to the legacy Layout where needed
+  return <MainLayout>{children}</MainLayout>;
 }

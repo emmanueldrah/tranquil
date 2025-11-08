@@ -2,20 +2,39 @@
   "name": "tranquil",
   "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "@next-auth/prisma-adapter": "^1.0.7",
+    "@paypal/paypal-js": "^9.0.1",
+    "@prisma/client": "^5.22.0",
+    "@stripe/stripe-js": "^8.2.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/uuid": "^10.0.0",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^9.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.552.0",
+    "next": "16.0.1",
+    "paystack-js": "^0.18.1",
+    "prisma": "^5.15.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "recharts": "^3.3.0",
+    "stripe": "^19.2.0",
+    "uuid": "^13.0.0"
+  },
+  "prisma": {
+    "seed": "node ./scripts/seed.mjs"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "@types/uuid": "^10.0.0",
-    "lucide-react": "^0.552.0",
-    "next": "16.0.1",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "recharts": "^3.3.0",
-    "uuid": "^13.0.0"
+    "lint": "eslint",
+    "prisma:generate": "prisma generate",
+    "prisma:dbpush": "prisma db push",
+    "seed": "node ./scripts/seed.mjs",
+    "import:local": "node scripts/import-local-json.mjs"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

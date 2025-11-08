@@ -1,19 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { getAnalyticsSummary, AnalyticsSummary } from '@/utils/analytics';
 
 export function AnalyticsDashboard() {
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-    endDate: new Date().toISOString(),
+  const [dateRange, setDateRange] = useState(() => {
+    // Calculate dates in a lazy initializer to avoid impure function during render
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    return {
+      startDate: thirtyDaysAgo.toISOString(),
+      endDate: now.toISOString(),
+    };
   });
-  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
 
-  useEffect(() => {
-    const data = getAnalyticsSummary(dateRange.startDate, dateRange.endDate);
-    setSummary(data);
-  }, [dateRange]);
+  const summary = useMemo(() => {
+    return getAnalyticsSummary(dateRange.startDate, dateRange.endDate);
+  }, [dateRange.startDate, dateRange.endDate]);
 
   if (!summary) return <div>Loading...</div>;
 

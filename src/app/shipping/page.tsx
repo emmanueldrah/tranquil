@@ -16,9 +16,9 @@ export default function ShippingPage() {
 
           <h2>Shipping Rates</h2>
           <ul>
-            <li>Standard Shipping: $5.99 (Free on orders over $50)</li>
-            <li>Express Shipping: $12.99</li>
-            <li>Overnight Shipping: $24.99</li>
+            <li>Standard Shipping: ₵5.99 (Free on orders over ₵50)</li>
+            <li>Express Shipping: ₵12.99</li>
+            <li>Overnight Shipping: ₵24.99</li>
           </ul>
 
           <h2>International Shipping</h2>
@@ -30,8 +30,8 @@ export default function ShippingPage() {
 
           <h2>Order Tracking</h2>
           <p>
-            Once your order ships, you'll receive a tracking number via email. You can use
-            this number to track your package on our website or the carrier's website.
+            Once your order ships, you&apos;ll receive a tracking number via email. You can use
+            this number to track your package on our website or the carrier&apos;s website.
           </p>
 
           <h2>Contact Us</h2>

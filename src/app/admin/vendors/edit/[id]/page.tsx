@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import AdminLayout from '../../../layout';
 import { Vendor } from '@/types';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 export default function AdminEditVendorPage() {
   const router = useRouter();
@@ -68,21 +69,20 @@ export default function AdminEditVendorPage() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-gray-500">Loading vendor...</div>
-        </div>
-      </AdminLayout>
+      <div className="flex justify-center items-center h-64">
+        <div className="text-gray-500">Loading vendor...</div>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Edit Vendor</h1>
-          <p className="text-gray-600">Update vendor information</p>
-        </div>
+        <Card className="p-6 mb-6" style={{ background: 'var(--admin-bg-card)', borderColor: 'var(--admin-border)' }}>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Edit Vendor</h1>
+            <p className="text-gray-600">Update vendor information</p>
+          </div>
+        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="bg-white shadow-sm rounded-lg p-6">
@@ -199,23 +199,14 @@ export default function AdminEditVendorPage() {
           </div>
 
           <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            >
+            <Button type="button" variant="secondary" onClick={() => router.back()} className="px-6 py-2">
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            </Button>
+            <Button type="submit" disabled={isSubmitting} variant="primary" className="px-6 py-2">
               {isSubmitting ? 'Updating...' : 'Update Vendor'}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
-    </AdminLayout>
   );
 }

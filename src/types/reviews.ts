@@ -4,8 +4,14 @@ export interface Review {
   userId: string;
   userName: string;
   rating: number;
-  comment: string;
-  createdAt: string;
+  title?: string;
+  comment?: string;
   helpful: number;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
   images?: string[];
+  pros?: string[];
+  cons?: string[];
+  videos?: string[];
 }

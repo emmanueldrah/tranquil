@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model AbandonedCart {
+  id        String   @id
+  items     String
+  total     Float
+  userEmail String?
+  createdAt DateTime
+  sentAt    DateTime?
+}
+
+model Product {
+  id          String @id
+  name        String
+  description String?
+  price       Float
+  images      String
+  category    String?
+  subcategory String?
+  brand       String?
+  stock       Int
+  vendor      String
+  specifications String?
+  isOnSale    Boolean?
+  salePrice   Float?
+  originalPrice Float?
+  saleEnds    DateTime?
+  createdAt   DateTime?
+  variants    String?
+  seo         String?
+  tags        String?
+  reviews     Review[]
+}
+
+model Vendor {
+  id          String @id
+  name        String
+  description String?
+  logo        String?
+  rating      Float?
+  joinedDate  DateTime?
+  contactInfo String?
+}
+
+model Order {
+  id             String   @id
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items          String
+  totalAmount    Float
+  status         String
+  paymentMethod  String
+  shippingAddress String
+  createdAt      DateTime
+  updatedAt      DateTime
+  trackingNumber String?
+  estimatedDelivery DateTime?
+  trackingHistory String?
+  notes          String?
+  carrier        String?
+}
+
+model Category {
+  id          String @id
+  name        String
+  slug        String @unique
+  description String?
+  image       String?
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  rating    Int
+  title     String?
+  comment   String?
+  helpful   Int      @default(0)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  phone     String?
+  role      String   @default("customer")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int
+  selectedVariant String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+}
+
+model Banner {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image       String
+  link        String?
+  isActive    Boolean  @default(true)
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

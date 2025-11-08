@@ -1,10 +1,18 @@
+import { Product, CartItem, CheckoutData } from '../types/product';
+
 // Types
+export interface BaseEventData {
+  path?: string;
+  productId?: string;
+  searchQuery?: string;
+}
+
 export interface AnalyticsEvent {
   id: string;
   type: 'pageView' | 'productView' | 'addToCart' | 'checkout' | 'search';
   userId?: string;
   timestamp: string;
-  data: Record<string, any>;
+  data: BaseEventData | CheckoutData;
 }
 
 export interface AnalyticsSummary {
@@ -25,7 +33,7 @@ export interface AnalyticsSummary {
 }
 
 // Analytics tracking
-export const trackEvent = (type: AnalyticsEvent['type'], data: Record<string, any>) => {
+export const trackEvent = (type: AnalyticsEvent['type'], data: BaseEventData | CheckoutData) => {
   try {
     const event: AnalyticsEvent = {
       id: `evt_${Date.now()}`,
@@ -76,13 +84,14 @@ export const getAnalyticsSummary = (
   filteredEvents
     .filter((event: AnalyticsEvent) => event.type === 'checkout')
     .forEach((event: AnalyticsEvent) => {
-      summary.totalOrders++;
-      summary.totalSales += event.data.total;
+  summary.totalOrders++;
+  summary.totalSales += (event.data as CheckoutData).total;
 
       // Track product sales
-      event.data.items.forEach((item: any) => {
+      const checkoutData = event.data as CheckoutData;
+      checkoutData.items.forEach((item: CartItem) => {
         const product = JSON.parse(localStorage.getItem('products') || '[]').find(
-          (p: any) => p.id === item.productId
+          (p: Product) => p.id === item.productId
         );
 
         if (product) {
@@ -115,7 +124,7 @@ export const getAnalyticsSummary = (
   summary.topProducts = Array.from(productSales.entries())
     .map(([productId, stats]) => {
       const product = JSON.parse(localStorage.getItem('products') || '[]').find(
-        (p: any) => p.id === productId
+        (p: Product) => p.id === productId
       );
       return {
         productId,

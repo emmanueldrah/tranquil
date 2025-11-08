@@ -4,7 +4,7 @@ export default function FAQPage() {
   const faqs = [
     {
       question: "How do I track my order?",
-      answer: "Once your order ships, you'll receive an email with a tracking number. You can use this number to track your package on our website or the carrier's website."
+      answer: "Once your order ships, you&apos;ll receive an email with a tracking number. You can use this number to track your package on our website or the carrier&apos;s website."
     },
     {
       question: "What is your return policy?",
@@ -28,7 +28,7 @@ export default function FAQPage() {
     },
     {
       question: "Do you offer warranties?",
-      answer: "All products come with the manufacturer's standard warranty. We also offer extended warranty options for select products."
+      answer: "All products come with the manufacturer&apos;s standard warranty. We also offer extended warranty options for select products."
     },
     {
       question: "How do I contact customer service?",

@@ -1,5 +1,6 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 export default function ContactPage() {
   return (
@@ -136,12 +137,13 @@ export default function ContactPage() {
                 ></textarea>
               </div>
 
-              <button
+              <Button
                 type="submit"
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                variant="primary"
+                className="w-full py-3 px-6 rounded-md font-medium"
               >
                 Send Message
-              </button>
+              </Button>
             </form>
           </div>
         </div>

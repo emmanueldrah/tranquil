@@ -9,22 +9,22 @@ export default function WarrantyPage() {
         <div className="prose prose-lg max-w-none">
           <h2>Manufacturer Warranty</h2>
           <p>
-            All products sold on Tranquil come with the manufacturer's standard warranty.
+            All products sold on Tranquil come with the manufacturer&apos;s standard warranty.
             Warranty coverage varies by product and manufacturer. Please refer to your
-            product's documentation for specific warranty terms.
+            product&apos;s documentation for specific warranty terms.
           </p>
 
           <h2>Extended Warranty Options</h2>
           <p>
             We offer extended warranty options for select products. These plans provide
-            additional coverage beyond the manufacturer's warranty period. Contact our
+            additional coverage beyond the manufacturer&apos;s warranty period. Contact our
             customer service team for more information about extended warranty options.
           </p>
 
           <h2>Warranty Claims</h2>
           <p>
             To file a warranty claim, please contact the manufacturer directly using the
-            information provided in your product's documentation. If you purchased your
+            information provided in your product&apos;s documentation. If you purchased your
             product from Tranquil, we can assist you in the claims process.
           </p>
 

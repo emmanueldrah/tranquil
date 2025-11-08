@@ -6,6 +6,7 @@ export interface Product {
   images: string[];
   category: string;
   subcategory?: string;
+  brand?: string;
   stock: number;
   vendor: string;
   rating: {
@@ -16,8 +17,27 @@ export interface Product {
   specifications?: Record<string, string>;
   isOnSale?: boolean;
   salePrice?: number;
+  originalPrice?: number;
   saleEnds?: string;
   createdAt?: string;
+  variants?: ProductVariant[];
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string;
+  };
+  tags?: string[];
+}
+
+export interface ProductVariant {
+  id: string;
+  name: string;
+  type: 'color' | 'size' | 'storage' | 'material' | 'style';
+  value: string;
+  price?: number; // Additional price for this variant
+  stock: number;
+  sku?: string;
+  image?: string;
 }
 
 export interface Vendor {
@@ -37,6 +57,8 @@ export interface Vendor {
   website?: string;
 }
 
+import { UserPreferences } from './auth';
+
 export interface User {
   id: string;
   name: string;
@@ -47,6 +69,8 @@ export interface User {
   wishlist: string[]; // Product IDs
   cart: CartItem[];
   orders: Order[];
+  loyaltyPoints?: number;
+  preferences?: UserPreferences;
 }
 
 export interface Address {
@@ -62,6 +86,7 @@ export interface Address {
 export interface CartItem {
   productId: string;
   quantity: number;
+  selectedVariant?: string;
 }
 
 export interface Order {
@@ -74,12 +99,27 @@ export interface Order {
   shippingAddress: Address;
   createdAt: string;
   updatedAt: string;
+  trackingNumber?: string;
+  estimatedDelivery?: string;
+  trackingHistory?: TrackingEvent[];
+  carrier?: string;
+  // Optional notes left on the order (customer or vendor/admin)
+  notes?: { author: string; message: string; createdAt: string }[];
 }
 
 export interface OrderItem {
   productId: string;
   quantity: number;
   price: number;
+}
+
+export interface TrackingEvent {
+  id: string;
+  status: string;
+  description: string;
+  location?: string;
+  timestamp: string;
+  carrier?: string;
 }
 
 export interface Category {
@@ -97,4 +137,16 @@ export interface Subcategory {
   slug: string;
   description: string;
   image: string;
+}
+
+export interface Banner {
+  id: string;
+  title: string;
+  description?: string;
+  image: string;
+  link?: string;
+  isActive: boolean;
+  position: number;
+  createdAt: string;
+  updatedAt: string;
 }
